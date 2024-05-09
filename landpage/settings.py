@@ -18,15 +18,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 import os
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media') # Path to the media directory
-MEDIA_URL = '/media/'  # URL to serve media files
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media') # Path to the media directory
+# MEDIA_URL = '/media/'  # URL to serve media files
+from dotenv import load_dotenv
 
+# Load environment variables from .env file
+load_dotenv()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-@0)yrezp5^oof)ym8)i$=e@7a*h2in+e=tf5)jf0^0#s0nu!of'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -46,6 +49,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'userform',
+    'storages'
 ]
 
 MIDDLEWARE = [
@@ -139,3 +143,18 @@ CORS_ALLOWED_ORIGINS = [
     "https://mhcockpit.com",
     # Add other origins if needed
 ]
+
+
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = 'landpagebucket'
+AWS_S3_ENDPOINT_URL = 'https://landpagebucket.blr1.digitaloceanspaces.com'
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',
+}
+AWS_LOCATION = 'landpageresume'  # Change this to your desired location for media files
+
+
+
+MEDIA_URL = 'https://%s/%s/' % (AWS_S3_ENDPOINT_URL, AWS_LOCATION)
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
